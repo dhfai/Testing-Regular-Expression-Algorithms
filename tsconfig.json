@@ -8,6 +8,6 @@
     "forceConsistentCasingInFileNames": true,
     "outDir": "./dist"
   },
-  "include": ["src/**/*", "../client/store"],
+  "include": ["src/**/*", "../client/store", "test"],
   "exclude": ["node_modules"]
 }
