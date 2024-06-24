@@ -7,26 +7,10 @@ generator client {
   provider = "prisma-client-js"
 }
 
-model Account {
-  id      String @id @default(cuid())
-  name    String
-  balance Float
-}
-
 model Nasabah {
-  id          String   @id @default(cuid())
-  name        String
-  accountNo   String   @unique
-  balance     Float
-  password    String
-  mutasi      Mutasi[]
-}
-
-model Mutasi {
-  id          String   @id @default(cuid())
-  nasabahId   String
-  type        String
-  amount      Float
-  createdAt   DateTime @default(now())
-  nasabah     Nasabah  @relation(fields: [nasabahId], references: [id])
+  id        Int     @id @default(autoincrement())
+  nama      String
+  norekening String @unique
+  saldo     Float
+  password  String
 }

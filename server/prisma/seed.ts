@@ -1,33 +1,45 @@
+// prisma/seed.ts
 import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
 async function main() {
-  const nasabah1 = await prisma.nasabah.create({
-    data: {
-      name: 'Nasabah 1',
-      accountNo: '1234567890',
-      balance: 10000000,
-      password: 'password123',
-    },
+  await prisma.nasabah.deleteMany({});
+  
+  await prisma.nasabah.createMany({
+    data: [
+      {
+        nama: 'Alice',
+        norekening: '12345',
+        saldo: 1000,
+        password: 'secret',
+      },
+      {
+        nama: 'Bob',
+        norekening: '67890',
+        saldo: 500,
+        password: 'secret',
+      },
+      {
+        nama: 'Charlie',
+        norekening: '54321',
+        saldo: 50,
+        password: 'secret',
+      },
+      {
+        nama: 'David',
+        norekening: '09876',
+        saldo: 300,
+        password: 'secret',
+      },
+    ],
   });
-
-  const nasabah2 = await prisma.nasabah.create({
-    data: {
-      name: 'Nasabah 2',
-      accountNo: '0987654321',
-      balance: 2000,
-      password: 'password456',
-    },
-  });
-
-  console.log({ nasabah1, nasabah2 });
 }
 
 main()
   .catch((e) => {
     console.error(e);
-    // process.exit(1);
+    process.exit(1);
   })
   .finally(async () => {
     await prisma.$disconnect();

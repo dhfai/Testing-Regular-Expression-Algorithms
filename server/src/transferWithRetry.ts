@@ -1,10 +1,6 @@
-import express from 'express';
 import { PrismaClient } from '@prisma/client';
 
-const app = express();
 const prisma = new PrismaClient();
-
-app.use(express.json());
 
 const transferWithRetry = async (senderAccount: string, receiverAccount: string, amount: number, retries: number = 5) => {
   let attempt = 0;
@@ -39,11 +35,11 @@ const transferWithRetry = async (senderAccount: string, receiverAccount: string,
 
       return { success: true };
     } catch (error) {
-      if (error instanceof Error && error.message === 'Insufficient balance') {
+      if (error === 'Insufficient balance') {
         throw error;
       }
 
-      console.error(`Transaction attempt ${attempt + 1} failed: ${error instanceof Error ? error.message : error}`);
+      console.error(`Transaction attempt ${attempt + 1} failed: ${error}`);
       attempt += 1;
       await delay(2 ** attempt * 100);
     }
@@ -52,27 +48,4 @@ const transferWithRetry = async (senderAccount: string, receiverAccount: string,
   throw new Error('Transaction failed after maximum retries');
 };
 
-app.post('/transfer', async (req, res) => {
-  const { senderAccount, receiverAccount, amount, password } = req.body;
-
-  try {
-    const sender = await prisma.nasabah.findUnique({ where: { norekening: senderAccount } });
-
-    if (!sender || sender.password !== password) {
-      return res.status(401).json({ error: 'Unauthorized' });
-    }
-
-    await transferWithRetry(senderAccount, receiverAccount, amount);
-
-    res.status(200).json({ message: 'Transfer successful' });
-  } catch (error) {
-    if (error instanceof Error && error.message === 'Insufficient balance') {
-      return res.status(400).json({ error: 'Transaction failed due to insufficient balance', rollback: true });
-    }
-    res.status(500).json({ error: 'Transaction failed' });
-  }
-});
-
-app.listen(3000, () => {
-  console.log('Server running on port 3000');
-});
+export default transferWithRetry;
